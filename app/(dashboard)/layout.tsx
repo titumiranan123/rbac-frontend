@@ -1,10 +1,11 @@
 'use client';
 
-import { ReactNode, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/auth.store';
+import { DynamicSidebar } from '@/components/sidebar/DynamicSidebar';
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { isAuthenticated, isLoading, checkAuth } = useAuthStore();
 
@@ -12,14 +13,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      const publicPaths = ['/login', '/register'];
-      if (!publicPaths.includes(window.location.pathname)) {
-        router.push('/login');
-      }
+      router.push('/login');
     }
   }, [isLoading, isAuthenticated, router]);
 
-  if (isLoading) {
+  if (isLoading || !isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
@@ -30,5 +28,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
   }
 
-  return <>{children}</>;
+  return (
+    <div className="flex h-screen bg-gray-50">
+      <DynamicSidebar />
+      <main className="flex-1 overflow-auto">
+        <div className="p-8">{children}</div>
+      </main>
+    </div>
+  );
 }
