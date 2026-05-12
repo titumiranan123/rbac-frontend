@@ -1,67 +1,137 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useAuthStore } from '@/store/auth.store';
 import { apiClient } from '@/lib/api-client';
-import { PaginatedResponse, User } from '@/types';
+import { User, Role, PaginatedResponse } from '@/types';
+import { UserTable, UserForm } from '@/components/users';
 
 export default function UsersPage() {
-  const { user } = useAuthStore();
+  const { user: currentUser } = useAuthStore();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [pagination, setPagination] = useState({ page: 1, limit: 20, total: 0, totalPages: 1 });
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+
+  const fetchUsers = useCallback(async (page = 1) => {
+    try {
+      setLoading(true);
+      const response = await apiClient.get(`/users?page=${page}&limit=${pagination.limit}`);
+      const data = response.data as PaginatedResponse<User>;
+      setUsers(data.data);
+      setPagination((prev) => ({
+        ...prev,
+        page: data.meta.page,
+        total: data.meta.total,
+        totalPages: data.meta.totalPages,
+      }));
+    } catch (error) {
+      console.error('Failed to fetch users', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [pagination.limit]);
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await apiClient.get('/users');
-        const data = response.data as PaginatedResponse<User>;
-        setUsers(data.data);
-      } catch (error) {
-        console.error('Failed to fetch users', error);
-      } finally {
-        setLoading(false);
+    fetchUsers(1);
+  }, [fetchUsers]);
+
+  const handlePageChange = (page: number) => {
+    fetchUsers(page);
+  };
+
+  const handleEdit = (user: User) => {
+    setEditingUser(user);
+    setShowCreateForm(true);
+  };
+
+  const handleSuspend = async (userId: string) => {
+    if (!confirm('Are you sure you want to suspend this user?')) return;
+    try {
+      await apiClient.put(`/users/${userId}`, { isActive: false });
+      fetchUsers(pagination.page);
+    } catch (error: any) {
+      alert(error.response?.data?.message || 'Failed to suspend user');
+    }
+  };
+
+  const handleBan = async (userId: string) => {
+    if (!confirm('Are you sure you want to ban this user?')) return;
+    try {
+      await apiClient.put(`/users/${userId}`, { isActive: false });
+      fetchUsers(pagination.page);
+    } catch (error: any) {
+      alert(error.response?.data?.message || 'Failed to ban user');
+    }
+  };
+
+  const handleRestore = async (userId: string) => {
+    try {
+      await apiClient.put(`/users/${userId}`, { isActive: true });
+      fetchUsers(pagination.page);
+    } catch (error: any) {
+      alert(error.response?.data?.message || 'Failed to restore user');
+    }
+  };
+
+  const handleSubmit = async (data: any) => {
+    setSaving(true);
+    try {
+      if (editingUser) {
+        await apiClient.put(`/users/${editingUser.id}`, data);
+      } else {
+        await apiClient.post('/users', data);
       }
-    };
-    fetchUsers();
-  }, []);
+      setShowCreateForm(false);
+      setEditingUser(null);
+      fetchUsers(pagination.page);
+    } catch (error: any) {
+      alert(error.response?.data?.message || 'Failed to save user');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setShowCreateForm(false);
+    setEditingUser(null);
+  };
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-[#1F232A] mb-6">Users</h1>
-
-      {loading ? (
-        <div className="text-center py-10">Loading...</div>
-      ) : (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="text-left px-6 py-4 text-sm font-medium text-[#404857]">Name</th>
-                <th className="text-left px-6 py-4 text-sm font-medium text-[#404857]">Email</th>
-                <th className="text-left px-6 py-4 text-sm font-medium text-[#404857]">Role</th>
-                <th className="text-left px-6 py-4 text-sm font-medium text-[#404857]">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {users.map((user) => (
-                <tr key={user.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-[#1F232A]">{user.firstName} {user.lastName}</td>
-                  <td className="px-6 py-4 text-[#404857]">{user.email}</td>
-                  <td className="px-6 py-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${user.role === 'ADMIN' ? 'bg-red-100 text-red-700' : user.role === 'MANAGER' ? 'bg-yellow-100 text-yellow-700' : 'bg-blue-100 text-blue-700'}`}>
-                      {user.role}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${user.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
-                      {user.isActive ? 'Active' : 'Inactive'}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-3xl font-bold text-[#1F232A]">Users</h1>
+          <p className="text-[#404857] mt-1">Manage user accounts and permissions</p>
         </div>
+        <button
+          onClick={() => setShowCreateForm(true)}
+          className="px-6 py-3 bg-[#FD5E2B] text-white rounded-lg hover:bg-[#e04d1f] font-medium transition-colors"
+        >
+          + Add User
+        </button>
+      </div>
+
+      {showCreateForm ? (
+        <UserForm
+          user={editingUser || undefined}
+          onSubmit={handleSubmit}
+          onCancel={handleCancel}
+          loading={saving}
+        />
+      ) : (
+        <UserTable
+          users={users}
+          loading={loading}
+          onEdit={handleEdit}
+          onSuspend={handleSuspend}
+          onBan={handleBan}
+          onRestore={handleRestore}
+          pagination={pagination}
+          onPageChange={handlePageChange}
+        />
       )}
     </div>
   );
