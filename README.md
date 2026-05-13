@@ -4,7 +4,7 @@ Role-Based Access Control System with Next.js 16 + TypeScript + Tailwind CSS
 
 ## Tech Stack
 
-- **Framework:** Next.js 16 (App Router)
+- **Framework:** Next.js ^14.2.35 (App Router)
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS v4
 - **State Management:** React Context
@@ -14,28 +14,33 @@ Role-Based Access Control System with Next.js 16 + TypeScript + Tailwind CSS
 ## Features
 
 ### Authentication
+
 - JWT Access Token (stored in memory, cookie for middleware)
 - Refresh Token (httpOnly cookie)
 - No localStorage (secure)
 - Auto-refresh on 401
 
 ### Permission System
+
 - Dynamic Routing (permission atom based)
 - Permission Atoms: 21 predefined
 - Route → Permission mapping
 - Middleware permission check
 
 ### Dynamic Sidebar
+
 - Runtime permission check
 - Shows/hides menu items based on user permissions
 - Auto-refresh permissions on mount
 
 ### Permission Editor
+
 - Visual toggle editor
 - Grant Ceiling respect (disabled if no permission)
 - User-based permission management
 
 ### Modules
+
 - Dashboard (view_dashboard)
 - Users (view_users + CRUD)
 - Leads (view_leads) - stub
@@ -47,20 +52,20 @@ Role-Based Access Control System with Next.js 16 + TypeScript + Tailwind CSS
 
 ## Routes
 
-| Route | Permission | Description |
-|-------|------------|-------------|
-| /login | Public | Login page |
-| /register | Public | Registration page |
-| /dashboard | view_dashboard | Dashboard |
-| /users | view_users | User management |
-| /leads | view_leads | Leads (stub) |
-| /tasks | view_tasks | Tasks (stub) |
-| /reports | view_reports | Reports (stub) |
-| /audit | view_audit_log | Audit logs |
-| /settings | view_settings | Settings (stub) |
-| /permissions | edit_user | Permission editor |
-| /customer-portal | view_customer_portal | Customer portal |
-| /403 | - | Forbidden access |
+| Route            | Permission           | Description       |
+| ---------------- | -------------------- | ----------------- |
+| /login           | Public               | Login page        |
+| /register        | Public               | Registration page |
+| /dashboard       | view_dashboard       | Dashboard         |
+| /users           | view_users           | User management   |
+| /leads           | view_leads           | Leads (stub)      |
+| /tasks           | view_tasks           | Tasks (stub)      |
+| /reports         | view_reports         | Reports (stub)    |
+| /audit           | view_audit_log       | Audit logs        |
+| /settings        | view_settings        | Settings (stub)   |
+| /permissions     | edit_user            | Permission editor |
+| /customer-portal | view_customer_portal | Customer portal   |
+| /403             | -                    | Forbidden access  |
 
 ## Setup
 
@@ -175,7 +180,7 @@ apiClient.interceptors.response.use(
       // Refresh token
       // Retry request
     }
-  }
+  },
 );
 ```
 
@@ -200,12 +205,27 @@ apiClient.interceptors.response.use(
 
 ```typescript
 const PERMISSION_ATOMS = [
-  'view_dashboard', 'view_users', 'create_user', 'edit_user',
-  'delete_user', 'suspend_user', 'ban_user', 'view_leads',
-  'create_lead', 'edit_lead', 'delete_lead', 'view_tasks',
-  'create_task', 'edit_task', 'delete_task', 'view_reports',
-  'view_audit_log', 'view_settings', 'view_customer_portal',
-  'view_orders', 'view_tickets'
+  "view_dashboard",
+  "view_users",
+  "create_user",
+  "edit_user",
+  "delete_user",
+  "suspend_user",
+  "ban_user",
+  "view_leads",
+  "create_lead",
+  "edit_lead",
+  "delete_lead",
+  "view_tasks",
+  "create_task",
+  "edit_task",
+  "delete_task",
+  "view_reports",
+  "view_audit_log",
+  "view_settings",
+  "view_customer_portal",
+  "view_orders",
+  "view_tickets",
 ];
 ```
 
@@ -213,14 +233,14 @@ const PERMISSION_ATOMS = [
 
 ```typescript
 const ROUTE_PERMISSION_MAP = {
-  '/dashboard': 'view_dashboard',
-  '/users': 'view_users',
-  '/leads': 'view_leads',
-  '/tasks': 'view_tasks',
-  '/reports': 'view_reports',
-  '/audit': 'view_audit_log',
-  '/settings': 'view_settings',
-  '/customer-portal': 'view_customer_portal',
+  "/dashboard": "view_dashboard",
+  "/users": "view_users",
+  "/leads": "view_leads",
+  "/tasks": "view_tasks",
+  "/reports": "view_reports",
+  "/audit": "view_audit_log",
+  "/settings": "view_settings",
+  "/customer-portal": "view_customer_portal",
 };
 ```
 
@@ -245,12 +265,12 @@ interface AuthContextType {
 
 ## Color Scheme
 
-| Color | Hex | Usage |
-|-------|-----|-------|
-| Primary | #FD5E2B | Buttons, active states |
-| Primary Hover | #E5531F | Button hover |
-| Gray 900 | #111827 | Text, headers |
-| Gray 100 | #F3F4F6 | Backgrounds |
+| Color         | Hex     | Usage                  |
+| ------------- | ------- | ---------------------- |
+| Primary       | #FD5E2B | Buttons, active states |
+| Primary Hover | #E5531F | Button hover           |
+| Gray 900      | #111827 | Text, headers          |
+| Gray 100      | #F3F4F6 | Backgrounds            |
 
 ## Dependencies
 
