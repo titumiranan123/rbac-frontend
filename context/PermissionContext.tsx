@@ -2,16 +2,26 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useAuth } from './AuthContext';
 import { apiClient } from '@/lib/api-client';
-import { PERMISSION_ATOMS, PermissionAtom } from '@/lib/permissions';
+
+interface Permission {
+  id: string;
+  name: string;
+  description: string;
+  resource: string;
+  action: string;
+  level: number;
+}
 
 interface PermissionContextType {
   userPermissions: string[];
-  allPermissions: string[];
-  hasPermission: (permission: PermissionAtom) => boolean;
+  allPermissions: Permission[];
+  isLoading: boolean;
+  hasPermission: (permission: string) => boolean;
   grantPermission: (userId: string, permission: string) => Promise<boolean>;
   revokePermission: (userId: string, permission: string) => Promise<boolean>;
-  canGrant: (permission: PermissionAtom) => boolean;
+  canGrant: (permission: string) => boolean;
   refreshPermissions: () => Promise<void>;
+  refreshAllPermissions: () => Promise<void>;
 }
 
 const PermissionContext = createContext<PermissionContextType | undefined>(undefined);
@@ -19,12 +29,29 @@ const PermissionContext = createContext<PermissionContextType | undefined>(undef
 export function PermissionProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const [userPermissions, setUserPermissions] = useState<string[]>([]);
+  const [allPermissions, setAllPermissions] = useState<Permission[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (user?.grantedPermissions) {
       setUserPermissions(user.grantedPermissions);
     }
+    refreshAllPermissions();
   }, [user?.grantedPermissions]);
+
+  const refreshAllPermissions = async () => {
+    setIsLoading(true);
+    try {
+      const response = await apiClient.get('/permissions');
+      if (response.data && Array.isArray(response.data)) {
+        setAllPermissions(response.data);
+      }
+    } catch {
+      // Ignore
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const refreshPermissions = async () => {
     try {
@@ -37,17 +64,25 @@ export function PermissionProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const hasPermission = (permission: PermissionAtom): boolean => {
+  const hasPermission = (permission: string): boolean => {
     return userPermissions.includes(permission) || userPermissions.includes('*');
   };
 
-  const canGrant = (permission: PermissionAtom): boolean => {
-    return userPermissions.includes(permission) || userPermissions.includes('*') || userPermissions.includes(permission.replace('view_', ''));
+  const canGrant = (permission: string): boolean => {
+    if (userPermissions.includes('*')) return true;
+    if (userPermissions.includes(permission)) return true;
+    const relatedPerms = [
+      permission.replace('view_', ''),
+      permission.replace('create_', ''),
+      permission.replace('edit_', ''),
+      permission.replace('delete_', ''),
+    ];
+    return relatedPerms.some((p) => userPermissions.includes(p));
   };
 
   const grantPermission = async (userId: string, permission: string): Promise<boolean> => {
     try {
-      await apiClient.post(`/users/${userId}/permissions/${permission}`);
+      await apiClient.post(`/permissions/grant`, { userId, permission });
       return true;
     } catch (error: unknown) {
       const err = error as { response?: { status?: number } };
@@ -57,7 +92,7 @@ export function PermissionProvider({ children }: { children: ReactNode }) {
 
   const revokePermission = async (userId: string, permission: string): Promise<boolean> => {
     try {
-      await apiClient.delete(`/users/${userId}/permissions/${permission}`);
+      await apiClient.delete(`/permissions/revoke`, { data: { userId, permission } });
       return true;
     } catch (error: unknown) {
       const err = error as { response?: { status?: number } };
@@ -66,15 +101,19 @@ export function PermissionProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <PermissionContext.Provider value={{
-      userPermissions,
-      allPermissions: PERMISSION_ATOMS as unknown as string[],
-      hasPermission,
-      grantPermission,
-      revokePermission,
-      canGrant,
-      refreshPermissions,
-    }}>
+    <PermissionContext.Provider
+      value={{
+        userPermissions,
+        allPermissions,
+        isLoading,
+        hasPermission,
+        grantPermission,
+        revokePermission,
+        canGrant,
+        refreshPermissions,
+        refreshAllPermissions,
+      }}
+    >
       {children}
     </PermissionContext.Provider>
   );

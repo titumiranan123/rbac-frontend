@@ -1,10 +1,10 @@
-export default function TasksPage() {
-  return (
-    <div>
-      <h1 className="text-3xl font-bold text-(--color-gray-900)] mb-6">Tasks</h1>
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <p className="text-(--color-secondary)]">Tasks management coming soon...</p>
-      </div>
-    </div>
-  );
+import { redirect } from 'next/navigation';
+import { getData, getServerToken } from '@/lib/getData';
+import TasksClient from './_components/TasksClient';
+
+export default async function TasksPage() {
+  const token = await getServerToken();
+  if (!token) redirect('/login');
+
+  return <TasksClient />;
 }

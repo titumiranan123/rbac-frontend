@@ -1,35 +1,25 @@
-'use client';
-
-import { useState, useEffect } from 'react';
-import { apiClient } from '@/lib/api-client';
+import { redirect } from 'next/navigation';
+import { getData, getServerToken } from '@/lib/getData';
+import UsersClient from './_components/UsersClient';
 import { PaginatedResult, User } from '@/types';
-import UsersClient from './UsersClient';
 
-export default function UsersPage() {
-  const [initialData, setInitialData] = useState<PaginatedResult<User> | null>(null);
-  const [loading, setLoading] = useState(true);
+export default async function UsersPage() {
+  const token = await getServerToken();
+  if (!token) redirect('/login');
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await apiClient.get('/users?page=1&limit=20');
-        setInitialData(response.data);
-      } catch (error) {
-        console.error('Failed to fetch users:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchUsers();
-  }, []);
+  const { data, error, status } = await getData<PaginatedResult<User>>('/users?page=1&limit=20', token);
 
-  if (loading) {
+  if (status === 401) redirect('/login');
+  if (status === 403) redirect('/403');
+  if (error || !data) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+      <div className="p-6">
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+          {error || 'Failed to load users'}
+        </div>
       </div>
     );
   }
 
-  return <UsersClient initialData={initialData} />;
+  return <UsersClient initialData={data} />;
 }

@@ -34,10 +34,12 @@ export async function middleware(request: NextRequest) {
   const userRole = payload?.role || '';
 
   if (pathname === '/') {
-    return isValid ? NextResponse.redirect(new URL('/dashboard', request.url)) : NextResponse.redirect(new URL('/login', request.url));
+    return isValid
+      ? NextResponse.redirect(new URL('/dashboard', request.url))
+      : NextResponse.redirect(new URL('/login', request.url));
   }
 
-  if (AUTH_ROUTES.some(r => pathname.startsWith(r))) {
+  if (AUTH_ROUTES.includes(pathname)) {
     if (isValid) return NextResponse.redirect(new URL('/dashboard', request.url));
     return NextResponse.next();
   }
@@ -46,12 +48,11 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  if (isValid) {
-    if (userRole === 'ADMIN') return NextResponse.next();
-    const requiredPermission = getRequiredPermission(pathname);
-    if (requiredPermission && !userPermissions.includes(requiredPermission) && !userPermissions.includes('*')) {
-      return NextResponse.redirect(new URL('/403', request.url));
-    }
+  if (userRole === 'ADMIN') return NextResponse.next();
+
+  const requiredPermission = getRequiredPermission(pathname);
+  if (requiredPermission && !userPermissions.includes(requiredPermission)) {
+    return NextResponse.redirect(new URL('/403', request.url));
   }
 
   return NextResponse.next();

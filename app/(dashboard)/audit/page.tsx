@@ -1,15 +1,10 @@
-'use client';
+import { redirect } from 'next/navigation';
+import { getData, getServerToken } from '@/lib/getData';
+import AuditClient from './_components/AuditClient';
 
-import { AuditTable } from '@/components/audit/AuditTable';
+export default async function AuditPage() {
+  const token = await getServerToken();
+  if (!token) redirect('/login');
 
-export default function AuditPage() {
-  return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-(--color-gray-900)]">Audit Logs</h1>
-        <p className="text-(--color-secondary)] mt-1">Track all system activities and user actions</p>
-      </div>
-      <AuditTable />
-    </div>
-  );
+  return <AuditClient />;
 }

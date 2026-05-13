@@ -3,6 +3,7 @@ import './globals.css';
 import { AuthProvider, PermissionProvider } from '@/context';
 import { QueryProvider } from '@/providers/QueryProvider';
 import { Toaster } from 'react-hot-toast';
+import { LoadingGuard } from '@/components/LoadingGuard';
 
 export const metadata: Metadata = {
   title: 'RBAC Admin',
@@ -16,6 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AuthProvider>
           <PermissionProvider>
             <QueryProvider>
+              <LoadingGuard />
               {children}
               <Toaster
                 position="top-right"
