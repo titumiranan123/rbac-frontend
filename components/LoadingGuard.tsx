@@ -1,7 +1,5 @@
 "use client";
-import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
-import { usePermissions } from "@/context/PermissionContext";
 
 function LoadingSkeleton() {
   return (
@@ -15,19 +13,8 @@ function LoadingSkeleton() {
 }
 
 export function LoadingGuard() {
-  const { isLoading: authLoading } = useAuth();
-  const { isLoading: permLoading } = usePermissions();
   const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
+  useEffect(() => { setMounted(true); }, []);
   if (!mounted) return null;
-
-  if (authLoading || permLoading) {
-    return <LoadingSkeleton key="loading" />;
-  }
-
   return null;
 }

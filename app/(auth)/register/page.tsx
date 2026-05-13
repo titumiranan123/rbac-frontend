@@ -1,27 +1,40 @@
-'use client';
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { registerSchema, RegisterInput } from '@/lib/schemas';
-import { useAuth } from '@/context/AuthContext';
-import { Button, Input } from '@/components/ui';
+"use client";
+import { useState } from "react";
+import Link from "next/link";
+import { Button, Input } from "@/components/ui";
 
 export default function RegisterPage() {
-  const router = useRouter();
-  const { register: registerUser } = useAuth();
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { register: registerForm, handleSubmit, setError, formState: { errors } } = useForm<RegisterInput>({ resolver: zodResolver(registerSchema) });
 
-  const onSubmit = async (data: RegisterInput) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    
+    if (!firstName || !lastName || !email || !password) {
+      setError("Please fill in all fields");
+      return;
+    }
+
+    setIsSubmitting(true);
     try {
-      setIsSubmitting(true);
-      await registerUser(data.email, data.password, data.firstName, data.lastName);
-      router.push('/dashboard');
-    } catch (error: unknown) {
-      const err = error as Error;
-      setError('root', { message: err.message || 'Registration failed' });
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ firstName, lastName, email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Registration failed");
+      
+      document.cookie = `accessToken=${data.accessToken}; path=/; max-age=${60 * 15}; SameSite=Lax`;
+      window.location.href = "/dashboard";
+    } catch (err: unknown) {
+      setError((err as Error).message || "Registration failed");
       setIsSubmitting(false);
     }
   };
@@ -44,26 +57,26 @@ export default function RegisterPage() {
             <h2 className="text-2xl font-semibold text-gray-900">Create Account</h2>
             <p className="text-gray-500 mt-1">Fill in your details to get started</p>
           </div>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-900 mb-1">First Name</label>
-                <Input placeholder="John" error={errors.firstName?.message} {...registerForm('firstName')} />
+                <Input placeholder="John" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-900 mb-1">Last Name</label>
-                <Input placeholder="Doe" error={errors.lastName?.message} {...registerForm('lastName')} />
+                <Input placeholder="Doe" value={lastName} onChange={(e) => setLastName(e.target.value)} />
               </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-1">Email</label>
-              <Input type="email" placeholder="john@example.com" error={errors.email?.message} {...registerForm('email')} />
+              <Input type="email" placeholder="john@example.com" value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-1">Password</label>
-              <Input type="password" placeholder="Min 8 characters" error={errors.password?.message} {...registerForm('password')} />
+              <Input type="password" placeholder="Min 8 characters" value={password} onChange={(e) => setPassword(e.target.value)} />
             </div>
-            {errors.root && <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">{errors.root.message}</div>}
+            {error && <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">{error}</div>}
             <Button type="submit" className="w-full" isLoading={isSubmitting}>Create Account</Button>
           </form>
           <div className="mt-6 text-center">

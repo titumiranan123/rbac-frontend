@@ -10,16 +10,18 @@ export default async function DashboardPage() {
   const token = allCookies.find(c => c.name === 'accessToken')?.value || await getServerToken();
   if (!token) redirect('/login');
 
-  const [{ data: usersData }, { data: permsData }, { data: auditData }] = await Promise.all([
+  const [{ data: usersData }, { data: auditData }] = await Promise.all([
     getData<PaginatedResult<any>>('/users?limit=1', token),
-    getData<any[]>('/permissions', token),
     getData<PaginatedResult<any>>('/audit?limit=1', token),
   ]);
+
+  const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+  const permissionsCount = payload.grantedPermissions?.length || 0;
 
   return (
     <DashboardClient
       usersCount={usersData?.meta?.total || 0}
-      permissionsCount={Array.isArray(permsData) ? permsData.length : 0}
+      permissionsCount={permissionsCount}
       auditLogsCount={auditData?.meta?.total || 0}
     />
   );
