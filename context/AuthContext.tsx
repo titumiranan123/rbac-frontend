@@ -1,6 +1,5 @@
 "use client";
-import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from "react";
-import Cookies from "js-cookie";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { setAccessToken } from "@/lib/api-client";
 import { User } from "@/types";
 import { parseJwt } from "@/lib/parseJwt";
@@ -22,29 +21,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const token = Cookies.get("accessToken");
+    const token = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('accessToken='))
+      ?.split('=')[1];
+
     if (token) {
       const payload = parseJwt(token);
       if (payload && payload.exp * 1000 > Date.now()) {
         setUserState(payload as User);
         setAccessToken(token);
-      } else {
-        Cookies.remove("accessToken");
       }
     }
     setIsLoading(false);
   }, []);
-
-  const saveAccessTokenToCookie = (token: string) => {
-    const maxAge = 7 * 24 * 60 * 60;
-    document.cookie = `accessToken=${token}; path=/; max-age=${maxAge}; SameSite=Lax`;
-    document.cookie = `accessToken=${token}; path=/; max-age=${maxAge}; SameSite=Lax; domain=localhost`;
-  };
-
-  const clearAccessTokenCookie = () => {
-    document.cookie = 'accessToken=; path=/; max-age=0';
-    document.cookie = 'accessToken=; path=/; max-age=0; domain=localhost';
-  };
 
   const login = async (email: string, password: string) => {
     setIsLoading(true);
@@ -58,9 +48,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "Login failed");
 
+      document.cookie = `accessToken=${data.accessToken}; path=/; max-age=${60 * 15}; SameSite=Lax`;
       setAccessToken(data.accessToken);
-      saveAccessTokenToCookie(data.accessToken);
       setUserState({ ...data.user, grantedPermissions: data.user.grantedPermissions || [] });
+      window.location.href = "/dashboard";
+    } catch (error) {
+      throw error;
     } finally {
       setIsLoading(false);
     }
@@ -79,8 +72,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!response.ok) throw new Error(data.message || "Registration failed");
 
       setAccessToken(data.accessToken);
-      saveAccessTokenToCookie(data.accessToken);
       setUserState({ ...data.user, grantedPermissions: data.user.grantedPermissions || [] });
+      window.location.href = "/dashboard";
+    } catch (error) {
+      throw error;
     } finally {
       setIsLoading(false);
     }
@@ -91,39 +86,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
         method: "POST",
         credentials: "include",
-        headers: { "Content-Type": "application/json" },
       });
     } finally {
       setAccessToken(null);
-      clearAccessTokenCookie();
       setUserState(null);
+      document.cookie = "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      window.location.href = "/login";
     }
   };
 
-  const refreshUser = useCallback(async () => {
+  const refreshUser = async () => {
     setIsLoading(true);
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
         credentials: "include",
-        headers: { "Content-Type": "application/json" },
       });
       if (response.ok) {
         const userData = await response.json();
         setUserState(userData);
-        if (userData.accessToken) {
-          saveAccessTokenToCookie(userData.accessToken);
-        }
       } else {
-        clearAccessTokenCookie();
         setUserState(null);
       }
     } catch {
-      clearAccessTokenCookie();
       setUserState(null);
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  };
 
   return (
     <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, register, logout, refreshUser }}>

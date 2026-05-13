@@ -26,13 +26,13 @@ export type PermissionAtom = typeof PERMISSION_ATOMS[number];
 
 export const ROUTE_PERMISSION_MAP: Record<string, PermissionAtom> = {
   '/dashboard': 'view_dashboard',
-  '/users': 'view_users',
-  '/leads': 'view_leads',
-  '/tasks': 'view_tasks',
-  '/reports': 'view_reports',
-  '/audit': 'view_audit_log',
-  '/settings': 'view_settings',
-  '/customer-portal': 'view_customer_portal',
+  '/dashboard/users': 'view_users',
+  '/dashboard/leads': 'view_leads',
+  '/dashboard/tasks': 'view_tasks',
+  '/dashboard/reports': 'view_reports',
+  '/dashboard/audit': 'view_audit_log',
+  '/dashboard/settings': 'view_settings',
+  '/dashboard/customer-portal': 'view_customer_portal',
 };
 
 export const PERMISSION_DESCRIPTIONS: Record<PermissionAtom, string> = {
