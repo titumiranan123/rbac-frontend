@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { getRequiredPermission } from '@/lib/permissions';
 
-const protectedRoutes = ['/dashboard', '/users', '/leads', '/tasks', '/reports', '/audit', '/settings'];
-const adminRoutes = ['/users'];
+const PROTECTED_ROUTES = ['/dashboard', '/users', '/leads', '/tasks', '/reports', '/audit', '/settings', '/customer-portal'];
+const AUTH_ROUTES = ['/login', '/register'];
 
-function parseJwt(token: string): { sub: string; email: string; role: string; exp: number } | null {
+function parseJwt(token: string): { sub: string; email: string; role: string; exp: number; grantedPermissions?: string[] } | null {
   try {
     const base64Url = token.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -28,21 +29,27 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get('accessToken')?.value;
   const isValid = isTokenValid(token);
+  const payload = isValid ? parseJwt(token!) : null;
+  const userPermissions = payload?.grantedPermissions || [];
+  const userRole = payload?.role || '';
 
-  if (!isValid && protectedRoutes.some((route) => pathname.startsWith(route))) {
-    const loginUrl = new URL('/login', request.url);
-    loginUrl.searchParams.set('redirect', pathname);
-    return NextResponse.redirect(loginUrl);
+  if (pathname === '/') {
+    return isValid ? NextResponse.redirect(new URL('/dashboard', request.url)) : NextResponse.redirect(new URL('/login', request.url));
   }
 
-  if (isValid && pathname === '/login') {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+  if (AUTH_ROUTES.some(r => pathname.startsWith(r))) {
+    if (isValid) return NextResponse.redirect(new URL('/dashboard', request.url));
+    return NextResponse.next();
   }
 
-  if (adminRoutes.some((route) => pathname.startsWith(route))) {
-    if (!token) return NextResponse.redirect(new URL('/login', request.url));
-    const payload = parseJwt(token);
-    if (payload && payload.role !== 'ADMIN') {
+  if (!isValid && PROTECTED_ROUTES.some(r => pathname.startsWith(r))) {
+    return NextResponse.redirect(new URL('/login', request.url));
+  }
+
+  if (isValid) {
+    if (userRole === 'ADMIN') return NextResponse.next();
+    const requiredPermission = getRequiredPermission(pathname);
+    if (requiredPermission && !userPermissions.includes(requiredPermission) && !userPermissions.includes('*')) {
       return NextResponse.redirect(new URL('/403', request.url));
     }
   }
@@ -51,5 +58,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|login|register|403).*)'],
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 };

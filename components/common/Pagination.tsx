@@ -1,3 +1,5 @@
+'use client';
+
 interface PaginationProps {
   page: number;
   limit: number;
@@ -13,16 +15,16 @@ export function Pagination({ page, limit, total, totalPages, onPageChange, onLim
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white rounded-xl shadow-sm border border-gray-100 p-4">
       <div className="flex items-center gap-4">
-        <span className="text-sm text-[#404857]">
+        <span className="text-sm text-(--color-secondary)">
           Showing {((page - 1) * limit) + 1} to {Math.min(page * limit, total)} of {total}
         </span>
         {onLimitChange && (
           <div className="flex items-center gap-2">
-            <span className="text-sm text-[#404857]">Per page:</span>
+            <span className="text-sm text-(--color-secondary)">Per page:</span>
             <select
               value={limit}
               onChange={(e) => onLimitChange(Number(e.target.value))}
-              className="px-3 py-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FD5E2B] text-sm"
+              className="px-3 py-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-(--color-primary) text-sm"
             >
               {limits.map((l) => (
                 <option key={l} value={l}>{l}</option>
@@ -58,8 +60,8 @@ export function Pagination({ page, limit, total, totalPages, onPageChange, onLim
                 onClick={() => onPageChange(pageNum)}
                 className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors ${
                   page === pageNum
-                    ? 'bg-[#FD5E2B] text-white'
-                    : 'bg-white border border-gray-300 hover:bg-gray-50 text-[#404857]'
+                    ? 'bg-(--color-primary) text-white'
+                    : 'bg-white border border-gray-300 hover:bg-gray-50 text-(--color-secondary)'
                 }`}
               >
                 {pageNum}

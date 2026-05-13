@@ -69,13 +69,13 @@ export function UserTable({
             placeholder="Search by name or email..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FD5E2B] focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-(--color-primary) focus:border-transparent"
           />
         </div>
         <select
           value={roleFilter}
           onChange={(e) => setRoleFilter(e.target.value as Role | '')}
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FD5E2B]"
+          className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-(--color-primary)"
         >
           <option value="">All Roles</option>
           <option value="ADMIN">Admin</option>
@@ -86,7 +86,7 @@ export function UserTable({
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value as 'active' | 'inactive' | '')}
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FD5E2B]"
+          className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-(--color-primary)"
         >
           <option value="">All Status</option>
           <option value="active">Active</option>
@@ -99,24 +99,24 @@ export function UserTable({
           <table className="w-full">
             <thead className="bg-gray-50">
               <tr>
-                <th className="text-left px-6 py-4 text-sm font-medium text-[#404857]">User</th>
-                <th className="text-left px-6 py-4 text-sm font-medium text-[#404857]">Email</th>
-                <th className="text-left px-6 py-4 text-sm font-medium text-[#404857]">Role</th>
-                <th className="text-left px-6 py-4 text-sm font-medium text-[#404857]">Status</th>
-                <th className="text-left px-6 py-4 text-sm font-medium text-[#404857]">Last Login</th>
-                <th className="text-left px-6 py-4 text-sm font-medium text-[#404857]">Actions</th>
+                <th className="text-left px-6 py-4 text-sm font-medium text-(--color-secondary)">User</th>
+                <th className="text-left px-6 py-4 text-sm font-medium text-(--color-secondary)">Email</th>
+                <th className="text-left px-6 py-4 text-sm font-medium text-(--color-secondary)">Role</th>
+                <th className="text-left px-6 py-4 text-sm font-medium text-(--color-secondary)">Status</th>
+                <th className="text-left px-6 py-4 text-sm font-medium text-(--color-secondary)">Last Login</th>
+                <th className="text-left px-6 py-4 text-sm font-medium text-(--color-secondary)">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-[#404857]">
+                  <td colSpan={6} className="px-6 py-12 text-center text-(--color-secondary)">
                     Loading users...
                   </td>
                 </tr>
               ) : filteredUsers.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-[#404857]">
+                  <td colSpan={6} className="px-6 py-12 text-center text-(--color-secondary)">
                     No users found
                   </td>
                 </tr>
@@ -127,20 +127,20 @@ export function UserTable({
                     <tr key={user.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-[#FD5E2B]/10 flex items-center justify-center text-[#FD5E2B] font-semibold">
+                          <div className="w-10 h-10 rounded-full bg-(--color-primary)/10 flex items-center justify-center text-(--color-primary) font-semibold">
                             {user.firstName[0]}{user.lastName[0]}
                           </div>
                           <div>
-                            <div className="font-medium text-[#1F232A]">
+                            <div className="font-medium text-(--color-gray-900)">
                               {user.firstName} {user.lastName}
                             </div>
-                            <div className="text-sm text-[#404857]">
+<div className="text-sm text-(--color-secondary)">
                               ID: {user.id.slice(0, 8)}...
                             </div>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-[#404857]">{user.email}</td>
+                      <td className="px-6 py-4 text-(--color-secondary)">{user.email}</td>
                       <td className="px-6 py-4">
                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${roleColors[user.role]}`}>
                           {user.role}
@@ -151,7 +151,7 @@ export function UserTable({
                           {statusConfig[status].label}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-sm text-[#404857]">
+                      <td className="px-6 py-4 text-sm text-(--color-secondary)">
                         {user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleDateString() : 'Never'}
                       </td>
                       <td className="px-6 py-4">
@@ -207,7 +207,7 @@ export function UserTable({
       </div>
 
       <div className="flex items-center justify-between">
-        <div className="text-sm text-[#404857]">
+        <div className="text-sm text-(--color-secondary)">
           Showing {filteredUsers.length} of {pagination.total} users
         </div>
         <div className="flex items-center gap-2">
@@ -218,7 +218,7 @@ export function UserTable({
           >
             Previous
           </button>
-          <span className="px-4 py-2 text-[#404857]">
+          <span className="px-4 py-2 text-(--color-secondary)">
             Page {pagination.page} of {pagination.totalPages}
           </span>
           <button

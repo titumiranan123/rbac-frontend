@@ -50,20 +50,20 @@ export function UserForm({ user, onSubmit, onCancel, loading = false }: UserForm
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-      <h2 className="text-xl font-semibold text-[#1F232A] mb-6">
+      <h2 className="text-xl font-semibold text-(--color-gray-900) mb-6">
         {user ? 'Edit User' : 'Create New User'}
       </h2>
 
       <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-[#1F232A] mb-2">
+            <label className="block text-sm font-medium text-(--color-gray-900) mb-2">
               First Name <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               {...register('firstName')}
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FD5E2B] ${
+              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-(--color-primary) ${
                 errors.firstName ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder="John"
@@ -74,13 +74,13 @@ export function UserForm({ user, onSubmit, onCancel, loading = false }: UserForm
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#1F232A] mb-2">
+            <label className="block text-sm font-medium text-(--color-gray-900) mb-2">
               Last Name <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               {...register('lastName')}
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FD5E2B] ${
+              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-(--color-primary) ${
                 errors.lastName ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder="Doe"
@@ -92,13 +92,13 @@ export function UserForm({ user, onSubmit, onCancel, loading = false }: UserForm
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-[#1F232A] mb-2">
+          <label className="block text-sm font-medium text-(--color-gray-900) mb-2">
             Email <span className="text-red-500">*</span>
           </label>
           <input
             type="email"
             {...register('email')}
-            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FD5E2B] ${
+            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-(--color-primary) ${
               errors.email ? 'border-red-500' : 'border-gray-300'
             }`}
             placeholder="john@example.com"
@@ -110,13 +110,13 @@ export function UserForm({ user, onSubmit, onCancel, loading = false }: UserForm
 
         {!user && (
           <div>
-            <label className="block text-sm font-medium text-[#1F232A] mb-2">
+            <label className="block text-sm font-medium text-(--color-gray-900) mb-2">
               Password <span className="text-red-500">*</span>
             </label>
             <input
               type="password"
               {...register('password')}
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FD5E2B] ${
+              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-(--color-primary) ${
                 errors.password ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder="Min 8 characters"
@@ -128,12 +128,12 @@ export function UserForm({ user, onSubmit, onCancel, loading = false }: UserForm
         )}
 
         <div>
-          <label className="block text-sm font-medium text-[#1F232A] mb-2">
+          <label className="block text-sm font-medium text-(--color-gray-900) mb-2">
             Role <span className="text-red-500">*</span>
           </label>
           <select
             {...register('role')}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FD5E2B]"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-(--color-primary)"
           >
             <option value="CUSTOMER">Customer</option>
             <option value="AGENT">Agent</option>
@@ -150,9 +150,9 @@ export function UserForm({ user, onSubmit, onCancel, loading = false }: UserForm
             type="checkbox"
             id="isActive"
             {...register('isActive')}
-            className="w-5 h-5 rounded border-gray-300 text-[#FD5E2B] focus:ring-[#FD5E2B]"
+            className="w-5 h-5 rounded border-gray-300 text-(--color-primary) focus:ring-(--color-primary)"
           />
-          <label htmlFor="isActive" className="text-sm font-medium text-[#1F232A]">
+          <label htmlFor="isActive" className="text-sm font-medium text-(--color-gray-900)">
             Active Account
           </label>
         </div>

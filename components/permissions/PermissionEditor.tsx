@@ -43,15 +43,15 @@ export function PermissionEditor({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-[#1F232A]">Permissions</h2>
-          <p className="text-sm text-[#404857]">
+          <h2 className="text-lg font-semibold text-(--color-gray-900)">Permissions</h2>
+          <p className="text-sm text-(--color-secondary)">
             {grantedPermissions.length} of {permissions.length} granted
           </p>
         </div>
         <button
           onClick={onSave}
           disabled={!canEdit || saving}
-          className="px-6 py-2 bg-[#FD5E2B] text-white rounded-lg hover:bg-[#e04d1f] disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
+          className="px-6 py-2 bg-(--color-primary) text-white rounded-lg hover:bg-(--color-primary-hover) disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
         >
           {saving ? 'Saving...' : 'Save Changes'}
         </button>
@@ -66,8 +66,8 @@ export function PermissionEditor({
       <div className="space-y-6">
         {Object.entries(groupedPermissions).map(([resource, perms]) => (
           <div key={resource} className="border border-gray-200 rounded-xl p-4">
-            <h3 className="text-sm font-semibold text-[#404857] uppercase mb-4 flex items-center gap-2">
-              <span className="w-8 h-8 bg-[#FD5E2B]/10 text-[#FD5E2B] rounded-lg flex items-center justify-center text-xs">
+            <h3 className="text-sm font-semibold text-(--color-secondary) uppercase mb-4 flex items-center gap-2">
+              <span className="w-8 h-8 bg-(--color-primary)/10 text-(--color-primary) rounded-lg flex items-center justify-center text-xs">
                 {perms.length}
               </span>
               {resource}
@@ -87,7 +87,7 @@ export function PermissionEditor({
                         ? 'bg-gray-50 border-gray-100 opacity-60 cursor-not-allowed'
                         : isGranted
                           ? 'bg-green-50 border-green-200 hover:border-green-300'
-                          : 'bg-white border-gray-200 hover:border-[#FD5E2B]'
+                          : 'bg-white border-gray-200 hover:border-(--color-primary)'
                       }
                     `}
                   >
@@ -97,12 +97,12 @@ export function PermissionEditor({
                         checked={isGranted}
                         onChange={() => canToggle && onToggle(perm.name)}
                         disabled={!canToggle}
-                        className="w-5 h-5 rounded border-gray-300 text-[#FD5E2B] focus:ring-[#FD5E2B] cursor-pointer disabled:cursor-not-allowed"
+                        className="w-5 h-5 rounded border-gray-300 text-(--color-primary) focus:ring-(--color-primary) cursor-pointer disabled:cursor-not-allowed"
                       />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="font-medium text-[#1F232A] text-sm truncate">{perm.name}</div>
-                      <div className="text-xs text-[#404857] mt-0.5 line-clamp-2">{perm.description}</div>
+                      <div className="font-medium text-(--color-gray-900) text-sm truncate">{perm.name}</div>
+                      <div className="text-xs text-(--color-secondary) mt-0.5 line-clamp-2">{perm.description}</div>
                       <div className="flex items-center gap-2 mt-2">
                         <span className={`text-xs px-2 py-0.5 rounded ${
                           perm.level === 0 ? 'bg-red-100 text-red-700' :
@@ -134,8 +134,8 @@ export function PermissionEditor({
       </div>
 
       <div className="bg-gray-50 rounded-xl p-4">
-        <h4 className="text-sm font-medium text-[#1F232A] mb-2">Permission Levels</h4>
-        <div className="flex flex-wrap gap-4 text-sm text-[#404857]">
+        <h4 className="text-sm font-medium text-(--color-gray-900) mb-2">Permission Levels</h4>
+        <div className="flex flex-wrap gap-4 text-sm text-(--color-secondary)">
           <span className="flex items-center gap-1">
             <span className="w-3 h-3 bg-red-500 rounded"></span>
             Level 0 - Admin Only

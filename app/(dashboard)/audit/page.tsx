@@ -6,8 +6,8 @@ export default function AuditPage() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-[#1F232A]">Audit Logs</h1>
-        <p className="text-[#404857] mt-1">Track all system activities and user actions</p>
+        <h1 className="text-3xl font-bold text-(--color-gray-900)]">Audit Logs</h1>
+        <p className="text-(--color-secondary)] mt-1">Track all system activities and user actions</p>
       </div>
       <AuditTable />
     </div>

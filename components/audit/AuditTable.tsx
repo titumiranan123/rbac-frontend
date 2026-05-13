@@ -83,12 +83,12 @@ export function AuditTable({ initialPage = 1, initialLimit = 20 }: AuditTablePro
     <div className="space-y-4">
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
         <div className="flex flex-wrap items-end gap-4">
-          <div className="min-w-[200px]">
-            <label className="block text-sm font-medium text-[#1F232A] mb-1">Action</label>
+          <div className="min-w-50">
+            <label className="block text-sm font-medium text-(--color-gray-900) mb-1">Action</label>
             <select
               value={actionFilter}
               onChange={(e) => { setActionFilter(e.target.value); setPage(1); }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FD5E2B]"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
             >
               <option value="">All Actions</option>
               {actions.map((action) => (
@@ -98,28 +98,28 @@ export function AuditTable({ initialPage = 1, initialLimit = 20 }: AuditTablePro
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#1F232A] mb-1">From</label>
+            <label className="block text-sm font-medium text-(--color-gray-900) mb-1">From</label>
             <input
               type="date"
               value={dateFrom}
               onChange={(e) => { setDateFrom(e.target.value); setPage(1); }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FD5E2B]"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-(--color-primary)"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#1F232A] mb-1">To</label>
+            <label className="block text-sm font-medium text-(--color-gray-900) mb-1">To</label>
             <input
               type="date"
               value={dateTo}
               onChange={(e) => { setDateTo(e.target.value); setPage(1); }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FD5E2B]"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-(--color-primary)"
             />
           </div>
 
           <button
             onClick={clearFilters}
-            className="px-4 py-2 bg-gray-100 text-[#404857] rounded-lg hover:bg-gray-200 transition-colors"
+            className="px-4 py-2 bg-gray-100 text-(--color-secondary) rounded-lg hover:bg-gray-200 transition-colors"
           >
             Clear Filters
           </button>
@@ -131,41 +131,41 @@ export function AuditTable({ initialPage = 1, initialLimit = 20 }: AuditTablePro
           <table className="w-full">
             <thead className="bg-gray-50">
               <tr>
-                <th className="text-left px-6 py-4 text-sm font-medium text-[#404857]">Timestamp</th>
-                <th className="text-left px-6 py-4 text-sm font-medium text-[#404857]">User</th>
-                <th className="text-left px-6 py-4 text-sm font-medium text-[#404857]">Action</th>
-                <th className="text-left px-6 py-4 text-sm font-medium text-[#404857]">Resource</th>
-                <th className="text-left px-6 py-4 text-sm font-medium text-[#404857]">IP Address</th>
-                <th className="text-left px-6 py-4 text-sm font-medium text-[#404857]">Status</th>
+                <th className="text-left px-6 py-4 text-sm font-medium text-(--color-secondary)">Timestamp</th>
+                <th className="text-left px-6 py-4 text-sm font-medium text-(--color-secondary)">User</th>
+                <th className="text-left px-6 py-4 text-sm font-medium text-(--color-secondary)">Action</th>
+                <th className="text-left px-6 py-4 text-sm font-medium text-(--color-secondary)">Resource</th>
+                <th className="text-left px-6 py-4 text-sm font-medium text-(--color-secondary)">IP Address</th>
+                <th className="text-left px-6 py-4 text-sm font-medium text-(--color-secondary)">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-[#404857]">Loading...</td>
+                  <td colSpan={6} className="px-6 py-12 text-center text-(--color-secondary)">Loading...</td>
                 </tr>
               ) : logs.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-[#404857]">No audit logs found</td>
+                  <td colSpan={6} className="px-6 py-12 text-center text-(--color-secondary)">No audit logs found</td>
                 </tr>
               ) : (
                 logs.map((log) => {
                   const colors = actionColors[log.action] || { bg: 'bg-gray-100', text: 'text-gray-700' };
                   return (
                     <tr key={log.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 text-sm text-[#404857]">{formatDate(log.timestamp)}</td>
-                      <td className="px-6 py-4 text-[#1F232A] font-medium">{log.userEmail}</td>
+                      <td className="px-6 py-4 text-sm text-(--color-secondary)">{formatDate(log.timestamp)}</td>
+                      <td className="px-6 py-4 text-(--color-gray-900) font-medium">{log.userEmail}</td>
                       <td className="px-6 py-4">
                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${colors.bg} ${colors.text}`}>
                           {log.action}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-sm text-[#404857]">
+                      <td className="px-6 py-4 text-sm text-(--color-secondary)">
                         {log.resource ? (
                           <span className="font-mono">{log.resource}{log.resourceId ? `/${log.resourceId.slice(0, 8)}` : ''}</span>
                         ) : '-'}
                       </td>
-                      <td className="px-6 py-4 text-sm text-[#404857] font-mono">{log.ipAddress || '-'}</td>
+                      <td className="px-6 py-4 text-sm text-(--color-secondary) font-mono">{log.ipAddress || '-'}</td>
                       <td className="px-6 py-4">
                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${log.status === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                           {log.status || '-'}

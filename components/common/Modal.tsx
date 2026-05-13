@@ -38,7 +38,7 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
+    <div className="fixed inset-0 z-(--z-modal) overflow-y-auto">
       <div className="flex min-h-screen items-center justify-center p-4">
         <div
           className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
@@ -48,7 +48,7 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
         <div className={`relative bg-white rounded-xl shadow-xl w-full ${sizes[size]} transform transition-all`}>
           {title && (
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-              <h2 className="text-xl font-semibold text-[#1F232A]">{title}</h2>
+              <h2 className="text-xl font-semibold text-(--color-gray-900)">{title}</h2>
               <button
                 onClick={onClose}
                 className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"

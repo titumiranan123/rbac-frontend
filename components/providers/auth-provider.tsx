@@ -2,13 +2,11 @@
 
 import { ReactNode, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuthStore } from '@/store/auth.store';
+import { useAuth } from '@/context/AuthContext';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const { isAuthenticated, isLoading, checkAuth } = useAuthStore();
-
-  useEffect(() => { checkAuth(); }, [checkAuth]);
+  const { isAuthenticated, isLoading } = useAuth();
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -23,8 +21,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-[#FD5E2B] border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="mt-4 text-[#404857]">Loading...</p>
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="mt-4 text-secondary">Loading...</p>
         </div>
       </div>
     );
